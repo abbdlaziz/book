@@ -1,13 +1,11 @@
 import type {Book} from "../type";
-import axios from 'axios';
+import {api} from "./api.ts";
 
-const BASE_URL = 'http://47.236.246.176:8080/books';
-
+const BASE_URL = '/books';
 
 export const getAllBooks = async (): Promise<Book[]> => {
-    const response = await axios.get(BASE_URL);
+    const response = await api.get(BASE_URL);
 
-    // Transform raw response into expected Book type
     return response.data.map((b: any) => ({
         id: b.id,
         title: b.title,
@@ -21,7 +19,7 @@ export const getAllBooks = async (): Promise<Book[]> => {
 };
 
 export const getBookById = async (id: number): Promise<Book> => {
-    const response = await axios.get(`${BASE_URL}/${id}`);
+    const response = await api.get(`${BASE_URL}/${id}`);
     const data = response.data;
 
     return {
@@ -37,14 +35,13 @@ export const getBookById = async (id: number): Promise<Book> => {
 };
 
 export const createBook = async (book: Book) => {
-    // Map nested author to flat backend structure
     const payload = {
         ...book,
         authorId: book.author.id,
-        authorName: book.author.name, // if needed, or omit if backend fetches it
+        authorName: book.author.name,
     };
 
-    const response = await axios.post(BASE_URL, payload);
+    const response = await api.post(BASE_URL, payload);
     return response.data;
 };
 
@@ -55,11 +52,11 @@ export const updateBook = async (id: number, book: Book) => {
         authorName: book.author.name,
     };
 
-    const response = await axios.put(`${BASE_URL}/${id}`, payload);
+    const response = await api.put(`${BASE_URL}/${id}`, payload);
     return response.data;
 };
 
 export const deleteBook = async (id: number) => {
-    const response = await axios.delete(`${BASE_URL}/${id}`);
+    const response = await api.delete(`${BASE_URL}/${id}`);
     return response.data;
 };

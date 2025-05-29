@@ -1,11 +1,10 @@
 import type {BorrowedBook} from "../type";
-import axios from "axios";
+import {api} from "./api.ts";
 
-const BASE_URL = 'http://47.236.246.176:8080/borrowed';
-
+const BASE_URL = '/borrowed';
 
 export const getAllBorrowedBooks = async (): Promise<BorrowedBook[]> => {
-    const response = await axios.get(BASE_URL);
+    const response = await api.get(BASE_URL);
 
     return response.data.map((bb: any) => ({
         id: bb.id,
@@ -14,12 +13,9 @@ export const getAllBorrowedBooks = async (): Promise<BorrowedBook[]> => {
         book: {
             id: bb.bookId,
             title: bb.bookTitle,
-            category: '', // optional: fill with default/empty if not available
+            category: '',
             publishingYear: 0,
-            author: {
-                id: 0,
-                name: ''
-            }
+            author: { id: 0, name: '' }
         },
         member: {
             id: bb.memberId,
@@ -30,18 +26,8 @@ export const getAllBorrowedBooks = async (): Promise<BorrowedBook[]> => {
     }));
 };
 
-export const createBorrowedBook = async (payload: {
-    bookId: number;
-    memberId: number;
-    borrowDate: string;
-    returnDate: string;
-}) => {
-    const response = await axios.post(BASE_URL, payload);
-    return response.data;
-};
-
 export const getBorrowedBookById = async (id: number): Promise<BorrowedBook> => {
-    const response = await axios.get(`http://47.236.246.176:8080/borrowed/${id}`);
+    const response = await api.get(`${BASE_URL}/${id}`);
     const bb = response.data;
 
     return {
@@ -53,10 +39,7 @@ export const getBorrowedBookById = async (id: number): Promise<BorrowedBook> => 
             title: bb.bookTitle,
             category: '',
             publishingYear: 0,
-            author: {
-                id: 0,
-                name: ''
-            }
+            author: { id: 0, name: '' }
         },
         member: {
             id: bb.memberId,
@@ -67,6 +50,15 @@ export const getBorrowedBookById = async (id: number): Promise<BorrowedBook> => 
     };
 };
 
+export const createBorrowedBook = async (payload: {
+    bookId: number;
+    memberId: number;
+    borrowDate: string;
+    returnDate: string;
+}) => {
+    const response = await api.post(BASE_URL, payload);
+    return response.data;
+};
 
 export const updateBorrowedBook = async (
     id: number,
@@ -77,6 +69,6 @@ export const updateBorrowedBook = async (
         returnDate: string;
     }
 ) => {
-    const response = await axios.put(`${BASE_URL}/${id}`, payload);
+    const response = await api.put(`${BASE_URL}/${id}`, payload);
     return response.data;
 };
